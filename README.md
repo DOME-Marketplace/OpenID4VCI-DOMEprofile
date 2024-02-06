@@ -5,6 +5,8 @@ Specification to allow holders to request issuance of credentials and issuers to
 
 The current WG-Draft version is built automatically from the master branch and can be accessed at: https://openid.github.io/OpenID4VCI/openid-4-verifiable-credential-issuance-wg-draft.html
 
+The current version of the DOME profile is at: https://dome-marketplace.github.io/OpenID4VCI-DOMEprofile/openid-4-verifiable-credential-issuance-wg-draft.html
+
 ### Build the HTML ###
 
 ```docker run -v `pwd`:/data danielfett/markdown2rfc openid-4-verifiable-credential-issuance-1_0.md```
