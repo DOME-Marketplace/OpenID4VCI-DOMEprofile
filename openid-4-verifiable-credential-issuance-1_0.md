@@ -127,9 +127,7 @@ Both the Credential and the Batch Credential Endpoints have the (optional) abili
 
 Every Credential Issuer utilizes an OAuth 2.0 [@!RFC6749] Authorization Server to authorize access. The same OAuth 2.0 Authorization Server can protect one or more Credential Issuers. Wallets determine the Credential Issuer's Authorization Server using the Credential Issuer's metadata (see (#credential-issuer-metadata)).
 
-<aside>
-DOME: The reference implementation of the issuer for LEAR Credentials has only one Authorithation Server and in addition it is implemented in the Credential Issuer.
-</aside>
+A> DOME: The reference implementation of the issuer for LEAR Credentials has only one Authorithation Server and in addition it is implemented in the Credential Issuer.
 
 All OAuth 2.0 Grant Types and extensions mechanisms can be used in conjunction with the Credential issuance API. Aspects not defined in this specification are expected to follow [@!RFC6749]. 
 
@@ -142,18 +140,16 @@ Existing OAuth 2.0 mechanisms are extended as following:
 * Authorization Endpoint: The additional parameter `issuer_state` is added to convey state in the context of processing an issuer-initiated Credential Offer (see (#credential-authz-request)). Additional parameters `wallet_issuer` and `user_hint` are added to enable the Credential Issuer to request Verifiable Presentations from the calling Wallet during Authorization Request processing.
 * Token Endpoint: Optional response parameters `c_nonce` and `c_nonce_expires_in` are added to the Token Endpoint, Credential Endpoint, and Batch Credential Endpoint to provide the Client with a nonce to be used for proof of possession of key material in a subsequent request to the Credential Endpoint (see (#token-response)).
 
-<aside>
-DOME:
-
-We use the "Pre-Authorized Code" Grant Type. The reasons for this are:
-
-* The claims in the LEAR Credential are essentially based on employee data coming from the HR database, and typically the issuance process is initiated by the company. The employee to act as LEAR is pre-selected and then credential offer is prepared in advance using that employee data. The employee is notified in advance via some off-line mechanism and also when the credential offer is ready. The employee then will request the actual issuance to her wallet using the mechanisms described in this document.
-* With these considerations, the flows for issuance are simpler while maintaining the required level of security.
-
-We do not use Cilent metadata, as we do not require the Issuer to know in advance the wallet that will be used in the process. The issuance process will use a QR code scanned by the wallet, so the Issuer does not use the `credential_offer_endpoint` of the wallet.
-
-The LEAR Credential Issuer does not have to support the Authorization Endpoint, because is uses the "Pre-Authorized Code" Grant Type.
-</aside>
+A> DOME:
+A> 
+A> We use the "Pre-Authorized Code" Grant Type. The reasons for this are:
+A> 
+A> * The claims in the LEAR Credential are essentially based on employee data coming from the HR database, and typically the issuance process is initiated by the company. The employee to act as LEAR is pre-selected and then credential offer is prepared in advance using that employee data. The employee is notified in advance via some off-line mechanism and also when the credential offer is ready. The employee then will request the actual issuance to her wallet using the mechanisms described in this document.
+A> * With these considerations, the flows for issuance are simpler while maintaining the required level of security.
+A> 
+A> We do not use Cilent metadata, as we do not require the Issuer to know in advance the wallet that will be used in the process. The issuance process will use a QR code scanned by the wallet, so the Issuer does not use the `credential_offer_endpoint` of the wallet.
+A> 
+A> The LEAR Credential Issuer does not have to support the Authorization Endpoint, because is uses the "Pre-Authorized Code" Grant Type.
 
 ## Core Concepts
 
