@@ -1,8 +1,8 @@
 %%%
-title = "OpenID for Verifiable Credential Issuance - Editor's draft"
-abbrev = "openid-4-verifiable-credential-issuance"
+title = "OpenID for Verifiable Credential Issuance - DOME profile"
+abbrev = "openid-4-verifiable-credential-issuance-dome"
 ipr = "none"
-workgroup = "OpenID Connect"
+workgroup = "DOME"
 keyword = ["security", "openid", "ssi"]
 
 [seriesInfo]
@@ -11,38 +11,26 @@ value = "openid-4-verifiable-credential-issuance-1_0-13"
 status = "standard"
 
 [[author]]
-initials="T."
-surname="Lodderstedt"
-fullname="Torsten Lodderstedt"
-organization="sprind.org"
+initials="J."
+surname="Ruiz"
+fullname="Jesus Ruiz"
+organization="alastria.io"
     [author.address]
-    email = "torsten@lodderstedt.net"
-
-[[author]]
-initials="K."
-surname="Yasuda"
-fullname="Kristina Yasuda"
-organization="Microsoft"
-    [author.address]
-    email = "kristina.yasuda@microsoft.com"
-
-[[author]]
-initials="T."
-surname="Looker"
-fullname="Tobias Looker"
-organization="Mattr"
-    [author.address]
-    email = "tobias.looker@mattr.global"
+    email = "jesus@alastria.io"
 
 %%%
 
 .# Abstract
 
-This specification defines an API for the issuance of Verifiable Credentials.
+This document defines a profile of OpenID4VCI focused on facilitating interoperability in DOME at the beginning stages of the project. It is a copy of the official [OpenID for Verifiable Credential Issuance - Editor's draft](https://openid.github.io/OpenID4VCI/openid-4-verifiable-credential-issuance-wg-draft.html), with comments inserted with the DOME-specific profile characteristics.
 
 {mainmatter}
 
 # Introduction
+
+A> This document defines a profile of OpenID4VCI focused on facilitating interoperability in DOME at the beginning stages of the project. It is a copy of the official [OpenID for Verifiable Credential Issuance - Editor's draft](https://openid.github.io/OpenID4VCI/openid-4-verifiable-credential-issuance-wg-draft.html), with comments inserted with the DOME-specific profile characteristics.
+A> 
+A> The approach we take is to insert comments in the text of the official draft specification (like the one where this text is inserted), leaving the original text untouched. The intention is to make it easier for readers, reducing the need for going back and forth between different documents. This document will be updated to keep it in sync with new versions of the official draft specification.
 
 This specification defines an API that is used to issue Verifiable Credentials. W3C formats [@VC_DATA] as well as other Credential formats, like [@ISO.18013-5], are supported. 
 
@@ -121,13 +109,24 @@ This specification defines an API for Credential issuance provided by a Credenti
 * An optional mechanism for the Credential Issuer to receive from the Wallet notification(s) of the status of the Credential(s) that have been issued.
 * A mechanism for the Credential Issuer to publish metadata about the Credentials it is capable of issuing (see (#credential-issuer-metadata)).
 
+A> DOME:
+A> The Batch Credential Endpoint is not implemented.
+A> 
+A> The Deferred Credential Endpoint MUST be implemented, because the LEAR Credential must be signed by the legal representative (a natural person) of the organisation, and this requires the manual intervention of the legal representative to authorise the signature.
+A> 
+A> The Credential Offer is implemented with a QR code that has to be scanned by the Wallet of the End-User.
+A> 
+A> Wallet notifications are not implemented by the Issuer.
+
 Both the Credential and the Batch Credential Endpoints have the (optional) ability to bind an issued Credential to certain cryptographic key material. Both requests therefore enable conveying proof of possession for the key material. Multiple key proof types are supported.
+
+A> DOME: the LEAR Credential requires the cryptographic binding of the DID of the employee in the credential. Details are described below.
 
 ## OAuth 2.0
 
 Every Credential Issuer utilizes an OAuth 2.0 [@!RFC6749] Authorization Server to authorize access. The same OAuth 2.0 Authorization Server can protect one or more Credential Issuers. Wallets determine the Credential Issuer's Authorization Server using the Credential Issuer's metadata (see (#credential-issuer-metadata)).
 
-A> DOME: The reference implementation of the issuer for LEAR Credentials has only one Authorithation Server and in addition it is implemented in the Credential Issuer.
+A> DOME: The reference implementation of the issuer for LEAR Credentials has only one Authorization Server and in addition it is implemented in the Credential Issuer.
 
 All OAuth 2.0 Grant Types and extensions mechanisms can be used in conjunction with the Credential issuance API. Aspects not defined in this specification are expected to follow [@!RFC6749]. 
 
@@ -147,7 +146,7 @@ A>
 A> * The claims in the LEAR Credential are essentially based on employee data coming from the HR database, and typically the issuance process is initiated by the company. The employee to act as LEAR is pre-selected and then credential offer is prepared in advance using that employee data. The employee is notified in advance via some off-line mechanism and also when the credential offer is ready. The employee then will request the actual issuance to her wallet using the mechanisms described in this document.
 A> * With these considerations, the flows for issuance are simpler while maintaining the required level of security.
 A> 
-A> We do not use Cilent metadata, as we do not require the Issuer to know in advance the wallet that will be used in the process. The issuance process will use a QR code scanned by the wallet, so the Issuer does not use the `credential_offer_endpoint` of the wallet.
+A> We do not use Client metadata, as we do not require the Issuer to know in advance the wallet that will be used in the process. The issuance process will use a QR code scanned by the wallet, so the Issuer does not use the `credential_offer_endpoint` of the wallet.
 A> 
 A> The LEAR Credential Issuer does not have to support the Authorization Endpoint, because is uses the "Pre-Authorized Code" Grant Type.
 
@@ -159,6 +158,8 @@ The Wallet sends one Credential Request per individual Credential to the Credent
 * multiple Credentials of the same type/doctype bound to different proofs, or
 * multiple Credentials of different types/doctypes bound to different proofs.
 
+A> DOME: We only support issuance of a single Credential of a specific type (the LEAR Credential for a given employee) with a given Access Token.
+
 Note: "type" and "doctype" are terms defined by individual Credential formats. For details, see (#format-profiles).
 
 The Wallet MAY send one Batch Credential Request to the Batch Credential Endpoint to request the following in the Batch Credential Response:
@@ -167,9 +168,13 @@ The Wallet MAY send one Batch Credential Request to the Batch Credential Endpoin
 * multiple Credentials of the same type/doctype bound to different proofs, or
 * multiple Credentials of different types/doctypes bound to different proofs.
 
+A> DOME: We do not implement the Batch Credential Endpoint
+
 In the course of the authorization process, the Credential Issuer MAY also request Credential presentation as a means to authenticate or identify the End-User during the issuance flow, as described in (#use-case-5).
 
 At its core, this specification is Credential format agnostic and allows implementers to leverage specific capabilities of Credential formats of their choice. Multiple Credential formats can be used within the same transaction. 
+
+A> DOME: At this moment we only support one format.
 
 The specification achieves this by defining the following:
 
@@ -184,6 +189,12 @@ The issuance can have multiple characteristics, which can be combined depending 
 * Wallet initiated or Issuer initiated: The request from the Wallet can be sent to the Credential Issuer without any gesture from the Credential Issuer (Wallet Initiated) or following the communication from the Credential Issuer (Issuer Initiated).
 * Same-device or Cross-device Credential Offer: The End-User may receive the Credential Offer from the Credential Issuer either on the same device as the device the Wallet resides on, or through any other means, such as another device or postal mail, so that the Credential Offer can be communicated to the Wallet.
 * Immediate or Deferred: The Credential Issuer can issue the Credential directly in response to the Credential Request (immediate) or requires time and needs the Wallet to come back to retrieve Credential (deferred).
+
+DOME:
+
+The Credential Issuer only supports the Pre-Authorized Code Flow, because the Credential Offer is pre-created by the Human Resources department of the organisation issuing the LEAR Credential to one of its employees.
+
+The flow is Issuer initiated (using a QR code), because the LEAR Credential is offered by the organisation to an appointed employee, after it has been decided after conversation among the HR department, the appointed employee and the legal representative of the organisation that has to sign the Credential.
 
 The following subsections illustrate some of the authorization flows supported by this specification.
 
